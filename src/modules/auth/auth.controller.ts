@@ -9,7 +9,7 @@ import {
   HttpStatus,
   Res,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import type { AuthUser } from '../../common/interfaces/auth-user.interface.js';
 import { AuthService } from './auth.service.js';
@@ -58,6 +58,12 @@ export class AuthController {
     const tokens = this.authService.login(req.user);
     const redirectUrl = `${process.env.FRONTEND_URL ?? 'http://localhost:5173'}/auth/google/callback?accessToken=${encodeURIComponent(tokens.accessToken)}&refreshToken=${encodeURIComponent(tokens.refreshToken)}`;
     res.redirect(redirectUrl);
+  }
+
+  @Get('verify-token')
+  @HttpCode(HttpStatus.OK)
+  verifyToken(@CurrentUser() user: AuthUser) {
+    return { valid: true, user: { id: user.id, email: user.email } };
   }
 
   @Post('refresh')
