@@ -21,7 +21,7 @@ import { UsersModule } from '../users/users.module.js';
         signOptions: {
           expiresIn: Number(configService
             .get<string>('JWT_ACCESS_EXPIRATION')!
-            .replace(/\D/g, '') as unknown as number)
+            .replace(/\D/g, '') as unknown as number) * 60 // in second
         },
       }),
     }),
