@@ -1,3 +1,4 @@
+import { performance } from 'node:perf_hooks';
 import { Injectable } from '@nestjs/common';
 import {
   HealthIndicator,
@@ -13,13 +14,17 @@ export class PrismaHealthIndicator extends HealthIndicator {
   }
 
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
+    const startedAt = performance.now();
     try {
       await this.prisma.$queryRaw`SELECT 1`;
-      return this.getStatus(key, true);
+      const latencyMs = Math.round((performance.now() - startedAt) * 100) / 100;
+      return this.getStatus(key, true, { latencyMs });
     } catch {
       throw new HealthCheckError(
         'Database check failed',
-        this.getStatus(key, false),
+        this.getStatus(key, false, {
+          latencyMs: Math.round((performance.now() - startedAt) * 100) / 100,
+        }),
       );
     }
   }

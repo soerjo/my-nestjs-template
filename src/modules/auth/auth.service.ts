@@ -118,9 +118,16 @@ export class AuthService {
   }
 
   login(payload: AuthUser) {
+    const jwtPayload = {
+      sub: payload.id,
+      email: payload.email,
+      role: payload.role,
+      organizationId: payload.organizationId,
+    };
+
     return {
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, {
+      accessToken: this.jwtService.sign(jwtPayload),
+      refreshToken: this.jwtService.sign(jwtPayload, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET')!,
         expiresIn:
           Number(

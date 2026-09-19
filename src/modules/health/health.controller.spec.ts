@@ -10,22 +10,23 @@ describe('HealthController', () => {
   const mockHealthCheckService = {
     check: jest
       .fn()
-      .mockImplementation((indicators: Array<() => Promise<unknown>>) => {
-        return Promise.all(indicators.map((fn) => fn())).then(() => ({
-          status: 'ok',
-          info: { database: { status: 'up' }, redis: { status: 'up' } },
-          error: {},
-          details: { database: { status: 'up' }, redis: { status: 'up' } },
-        }));
+      .mockImplementation(async (indicators: Array<() => Promise<unknown>>) => {
+        const results = await Promise.all(indicators.map((fn) => fn()));
+        const info = Object.assign({}, ...results);
+        return { status: 'ok', info, error: {}, details: info };
       }),
   };
 
   const mockPrismaIndicator = {
-    isHealthy: jest.fn().mockResolvedValue({ database: { status: 'up' } }),
+    isHealthy: jest.fn().mockResolvedValue({
+      database: { status: 'up', latencyMs: 5 },
+    }),
   };
 
   const mockRedisIndicator = {
-    isHealthy: jest.fn().mockResolvedValue({ redis: { status: 'up' } }),
+    isHealthy: jest.fn().mockResolvedValue({
+      redis: { status: 'up', latencyMs: 1 },
+    }),
   };
 
   beforeEach(async () => {
@@ -45,9 +46,26 @@ describe('HealthController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should execute health check', async () => {
+  it('returns enriched monitoring metrics', async () => {
     const result = await controller.check();
-    expect(result).toHaveProperty('status', 'ok');
-    expect(mockHealthCheckService.check).toHaveBeenCalled();
+    expect(result.status).toBe('ok');
+    const info = result.info as unknown as {
+      database: { latencyMs: number };
+      redis: { latencyMs: number };
+      system: {
+        uptimeSec: number;
+        memoryMB: { heapUsed: number; heapTotal: number; rss: number };
+        nodeVersion: string;
+      };
+    };
+    expect(info.database.latencyMs).toEqual(expect.any(Number));
+    expect(info.redis.latencyMs).toEqual(expect.any(Number));
+    expect(info.system.uptimeSec).toBeGreaterThan(0);
+    expect(info.system.memoryMB).toEqual({
+      heapUsed: expect.any(Number),
+      heapTotal: expect.any(Number),
+      rss: expect.any(Number),
+    });
+    expect(info.system.nodeVersion).toEqual(process.version);
   });
 });
