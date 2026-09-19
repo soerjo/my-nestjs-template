@@ -43,12 +43,12 @@ class EnvironmentVariables {
   JWT_REFRESH_EXPIRATION: string = '7d';
 
   @IsString()
-  @IsNotEmpty()
-  GOOGLE_CLIENT_ID!: string;
+  @IsOptional()
+  GOOGLE_CLIENT_ID?: string;
 
   @IsString()
-  @IsNotEmpty()
-  GOOGLE_CLIENT_SECRET!: string;
+  @IsOptional()
+  GOOGLE_CLIENT_SECRET?: string;
 
   @IsString()
   @IsOptional()
@@ -78,6 +78,18 @@ class EnvironmentVariables {
   @IsString()
   @IsOptional()
   FRONTEND_URL: string = 'http://localhost:5173';
+
+  @IsString()
+  @IsOptional()
+  REDIS_HOST: string = 'localhost';
+
+  @IsPort()
+  @IsOptional()
+  REDIS_PORT: string = '6379';
+
+  @IsString()
+  @IsOptional()
+  REDIS_URL?: string;
 }
 
 export function validate(config: Record<string, unknown>) {

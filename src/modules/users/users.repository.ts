@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
-import { $Enums, Prisma, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersRepository {
@@ -24,8 +24,8 @@ export class UsersRepository {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
-        organization: {select: { id: true, name: true }},
-      }
+        organization: { select: { id: true, name: true } },
+      },
     });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
