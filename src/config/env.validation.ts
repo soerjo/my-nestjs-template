@@ -81,6 +81,10 @@ class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
+  CORS_ORIGINS?: string;
+
+  @IsString()
+  @IsOptional()
   REDIS_HOST: string = 'localhost';
 
   @IsPort()

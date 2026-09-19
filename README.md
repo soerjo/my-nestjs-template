@@ -96,3 +96,13 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## Seed Admin
+
+A seed script creates a default organization and an admin user. Run it with:
+
+```bash
+$ npx prisma db seed
+```
+
+In production, you must set the `SEED_ADMIN_PASSWORD` environment variable before seeding. Plaintext passwords must never be committed to the repository.

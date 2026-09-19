@@ -20,6 +20,7 @@ services:
       - JWT_REFRESH_SECRET=super-secret-refresh-key-production-soerjo-sever
       - JWT_ACCESS_EXPIRATION=15m
       - JWT_REFRESH_EXPIRATION=7d
+      - CORS_ORIGINS=http://100.92.245.124:3050,http://localhost:3050
     networks:
       - internal_net
 
