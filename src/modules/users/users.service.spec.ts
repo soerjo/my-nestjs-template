@@ -192,7 +192,14 @@ describe('UsersService', () => {
     it('delegates to the repository', async () => {
       repository.remove.mockResolvedValue(createdUser);
 
-      await expect(service.remove('user-1')).resolves.toEqual(createdUser);
+      const result = await service.remove('user-1');
+
+      expect(result).toMatchObject({
+        id: 'user-1',
+        email: 'john@example.com',
+        role: 'USER',
+      });
+      expect(result).not.toHaveProperty('password');
       expect(repository.remove).toHaveBeenCalledWith('user-1');
     });
   });

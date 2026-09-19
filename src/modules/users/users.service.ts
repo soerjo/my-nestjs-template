@@ -26,7 +26,8 @@ export class UsersService {
     return {
       id: user.id,
       email: user.email,
-      userName: user.firstName + ' ' + user.lastName,
+      userName:
+        [user.firstName, user.lastName].filter(Boolean).join(' ') || null,
       organizationName: user.organization.name,
       role: user.role,
       organizationId: user.organization.id,
@@ -68,6 +69,8 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    return this.usersRepository.remove(id);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = await this.usersRepository.remove(id);
+    return result;
   }
 }

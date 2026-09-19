@@ -80,7 +80,7 @@ export class AuthService {
           firstName: dto.firstName ?? '',
           lastName: dto.lastName ?? '',
           organizationId: organization.id,
-          role: $Enums.RoleName.ADMIN,
+          role: $Enums.RoleName.USER,
         },
       });
     });
