@@ -1,6 +1,17 @@
-import { Controller, Get, Patch, Delete, Param, Body } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service.js';
+import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { Roles } from '../../common/decorators/roles.decorator.js';
 import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
@@ -14,6 +25,13 @@ export class UsersController {
   @Get('me')
   async getProfile(@CurrentUser('id') userId: string) {
     return this.usersService.findById(userId);
+  }
+
+  @Post()
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() dto: CreateUserDto) {
+    return this.usersService.create(dto);
   }
 
   @Get()

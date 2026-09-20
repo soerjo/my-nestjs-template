@@ -80,7 +80,7 @@ export class AuthService {
           firstName: dto.firstName ?? '',
           lastName: dto.lastName ?? '',
           organizationId: organization.id,
-          role: $Enums.RoleName.ADMIN,
+          role: $Enums.RoleName.USER,
         },
       });
     });
@@ -95,7 +95,6 @@ export class AuthService {
     firstName: string,
     lastName: string,
     organizationId: string,
-    roleId: string,
   ): Promise<AuthUser> {
     let user: User = (await this.usersRepository.findByEmail(email)) as User;
     if (!user) {
@@ -119,9 +118,16 @@ export class AuthService {
   }
 
   login(payload: AuthUser) {
+    const jwtPayload = {
+      sub: payload.id,
+      email: payload.email,
+      role: payload.role,
+      organizationId: payload.organizationId,
+    };
+
     return {
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, {
+      accessToken: this.jwtService.sign(jwtPayload),
+      refreshToken: this.jwtService.sign(jwtPayload, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET')!,
         expiresIn:
           Number(

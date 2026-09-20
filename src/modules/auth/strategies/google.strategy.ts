@@ -11,9 +11,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     configService: ConfigService,
   ) {
     super({
-      clientID: configService.get<string>('GOOGLE_CLIENT_ID')!,
-      clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET')!,
-      callbackURL: configService.get<string>('GOOGLE_CALLBACK_URL')!,
+      clientID: configService.get<string>('GOOGLE_CLIENT_ID') || 'unconfigured',
+      clientSecret:
+        configService.get<string>('GOOGLE_CLIENT_SECRET') || 'unconfigured',
+      callbackURL:
+        configService.get<string>('GOOGLE_CALLBACK_URL') ||
+        'http://localhost:3000/api/auth/google/callback',
       scope: ['email', 'profile'],
     });
   }
@@ -33,7 +36,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       email,
       firstName,
       lastName,
-      '4d977551-a23f-414e-9b92-d38ec3c1e1f6',
       '4d977551-a23f-414e-9b92-d38ec3c1e1f6',
     );
   }

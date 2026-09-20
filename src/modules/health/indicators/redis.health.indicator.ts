@@ -5,23 +5,26 @@ import {
   HealthIndicatorResult,
   HealthCheckError,
 } from '@nestjs/terminus';
-import { PrismaService } from '../../../prisma/prisma.service.js';
+import { RedisService } from '../../../redis/redis.service.js';
 
 @Injectable()
-export class PrismaHealthIndicator extends HealthIndicator {
-  constructor(private prisma: PrismaService) {
+export class RedisHealthIndicator extends HealthIndicator {
+  constructor(private redisService: RedisService) {
     super();
   }
 
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
     const startedAt = performance.now();
     try {
-      await this.prisma.$queryRaw`SELECT 1`;
+      const isOk = await this.redisService.ping();
       const latencyMs = Math.round((performance.now() - startedAt) * 100) / 100;
-      return this.getStatus(key, true, { latencyMs });
+      if (isOk) {
+        return this.getStatus(key, true, { latencyMs });
+      }
+      throw new Error('Redis ping did not return PONG');
     } catch {
       throw new HealthCheckError(
-        'Database check failed',
+        'Redis check failed',
         this.getStatus(key, false, {
           latencyMs: Math.round((performance.now() - startedAt) * 100) / 100,
         }),

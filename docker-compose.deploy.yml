@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-nestjs-template
+    restart: unless-stopped
+    ports:
+      - '3051:3000'
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://soerjo_pg:soerjo123@postgres_db:5432/pg_db?schema=nestjs_template
+      - REDIS_HOST=redis_cache
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis_cache:6379
+      - JWT_ACCESS_SECRET=super-secret-access-key-production-soerjo-sever
+      - JWT_REFRESH_SECRET=super-secret-refresh-key-production-soerjo-sever
+      - JWT_ACCESS_EXPIRATION=15m
+      - JWT_REFRESH_EXPIRATION=7d
+      - CORS_ORIGINS=http://100.92.245.124:3050,http://localhost:3050
+    networks:
+      - internal_net
+
+networks:
+  internal_net:
+    external: true
